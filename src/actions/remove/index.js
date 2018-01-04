@@ -1,92 +1,106 @@
 import axios from 'axios';
 import pluralize from 'pluralize';
-import {toastr} from 'react-redux-toastr';
-import {toggleConfirmationModal} from 'Actions/modals';
-import {capitalize} from 'Utils/string';
-import {getURL, wrapRequest} from '../base';
+import capitalize from 'capitalize';
+import {toggleConfirmationModal} from '../confirmation';
 
-function remove(options) {
-  const deleteOptions = {
-    entityMethod: 'delete',
-    ...options
-  };
+function createRemove(base, config) {
+  const {getURL, wrapRequest} = base;
+  const {showToastr} = config;
 
-  const {
-    params, entity, entityMethod,
-    hasConfirmation = true, hasToastr = true, isBulk = false,
-    confirmationText, confirmationHint, confirmationQuestion, confirmationTitle,
-    confirmationBtnTxt, cancelBtnTxt
-  } = deleteOptions;
-
-  const url = getURL(deleteOptions);
-  const entityItem = pluralize.singular(entity);
-
-  return dispatch => {
-    let $promiseResolve;
-    let $promiseReject;
-
-    const $promise = new Promise((resolve, reject) => {
-      $promiseResolve = resolve;
-      $promiseReject = reject;
-    });
-
-    const isNotEntityDelete = entityMethod !== 'delete';
-    const modalText = confirmationText || `delete ${isBulk ? 'these' : 'this'} ${entityItem}${isNotEntityDelete ? ` ${entityMethod}` : ''}`;
-    const modalHint = confirmationHint || '';
-    const modalTitle = confirmationTitle || (isBulk ? 'Bulk Delete' : 'Delete');
-
-    const confirm = () => {
-      const request = axios.delete(url, {params});
-      const wrappedRequest = wrapRequest({...deleteOptions, dispatch, request});
-
-      wrappedRequest
-        .then(response => {
-          const {data} = response;
-
-          if (isBulk && data && (data.deleted || data.failed)) {
-            if (data.deleted.count) {
-              toastr.success(
-                `${data.deleted.count} Removed Successfully`
-              );
-            }
-
-            if (data.failed.count) {
-              toastr.error(
-                `${data.failed.count} Failed to remove`,
-                data.failed.message
-              );
-            }
-          } else if (hasToastr) {
-            toastr.success(
-              'Removed Successfully',
-              `${capitalize(entityItem)}${isNotEntityDelete ? ` ${entityMethod}` : ''} ${isBulk ? 'have' : 'has'} been removed`
-            );
-          }
-
-          return response;
-        })
-        .then($promiseResolve)
-        .catch($promiseReject);
-
-      return wrappedRequest;
+  return function (options) {
+    const deleteOptions = {
+      entityMethod: 'delete',
+      ...options
     };
 
-    if (hasConfirmation) {
-      dispatch(toggleConfirmationModal({
-        title: modalTitle,
-        text: modalText,
-        hint: modalHint,
-        question: confirmationQuestion,
-        confirmText: confirmationBtnTxt || 'Yes, Delete',
-        cancelText: cancelBtnTxt || 'Cancel',
-        confirm
-      }));
-    } else {
-      confirm();
-    }
+    const {
+      params,
+      entity,
+      entityMethod,
+      isBulk = false,
+      hasToastr = true,
+      confirmation = {
+        text: '',
+        hint: '',
+        question: '',
+        color: '',
+        title: '',
+        btnTxt: '',
+        cancelBtnTxt: ''
+      }
+    } = deleteOptions;
 
-    return $promise;
+    const url = getURL(deleteOptions);
+    const entityItem = pluralize.singular(entity);
+
+    return dispatch => {
+      let $promiseResolve;
+      let $promiseReject;
+
+      const $promise = new Promise((resolve, reject) => {
+        $promiseResolve = resolve;
+        $promiseReject = reject;
+      });
+
+      const isNotEntityDelete = entityMethod !== 'delete';
+
+      const confirm = () => {
+        const request = axios.delete(url, {params});
+        const wrappedRequest = wrapRequest({...deleteOptions, dispatch, request});
+
+        wrappedRequest
+          .then(response => {
+            const {data} = response;
+
+            if (isBulk && data && (data.deleted || data.failed)) {
+              if (data.deleted.count) {
+                showToastr({
+                  type: 'success',
+                  title: `${data.deleted.count} Removed Successfully`
+                });
+              }
+
+              if (data.failed.count) {
+                showToastr({
+                  type: 'error',
+                  title: `${data.failed.count} Failed to remove`,
+                  text: data.failed.message
+                });
+              }
+            } else if (hasToastr) {
+              showToastr({
+                type: 'success',
+                title: 'Removed Successfully',
+                text: `${capitalize(entityItem)}${isNotEntityDelete ? ` ${entityMethod}` : ''} ${isBulk ? 'have' : 'has'} been removed`
+              });
+            }
+
+            return response;
+          })
+          .then($promiseResolve)
+          .catch($promiseReject);
+
+        return wrappedRequest;
+      };
+
+      if (confirmation) {
+        dispatch(toggleConfirmationModal({
+          title: confirmation.title || (isBulk ? 'Bulk Delete' : 'Delete'),
+          text: confirmation.text || `delete ${isBulk ? 'these' : 'this'} ${entityItem}${isNotEntityDelete ? ` ${entityMethod}` : ''}`,
+          hint: confirmation.hint,
+          question: confirmation.question,
+          color: confirmation.color || 'danger',
+          confirmText: confirmation.btnTxt || 'Yes, Delete',
+          cancelText: confirmation.cancelBtnTxt || 'Cancel',
+          confirm
+        }));
+      } else {
+        confirm();
+      }
+
+      return $promise;
+    };
   };
 }
 
-export default remove;
+export default createRemove;

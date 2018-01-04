@@ -1,7 +1,18 @@
-import get from './get';
-import search from './search';
-import update from './update';
-import create from './create';
-import remove from './remove';
+import createBase from './base';
+import createGet from './get';
+import createSearch from './search';
+import createUpdate from './update';
+import createCreate from './create';
+import createRemove from './remove';
 
-export default {get, search, update, create, remove};
+export default function createApi(config) {
+  const base = createBase(config);
+
+  return {
+    get: createGet(base, config),
+    search: createSearch(base, config),
+    update: createUpdate(base, config),
+    create: createCreate(base, config),
+    remove: createRemove(base, config)
+  };
+}

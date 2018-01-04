@@ -1,31 +1,44 @@
 import axios from 'axios';
 import pluralize from 'pluralize';
-import {toastr} from 'react-redux-toastr';
-import {capitalize} from 'Utils/string';
-import {getURL, wrapRequest} from '../base';
+import capitalize from 'capitalize';
 
-function create(options) {
-  const createOptions = {
-    entityMethod: 'create',
-    ...options
-  };
+function createCreate(base, config) {
+  const {getURL, wrapRequest} = base;
+  const {toastr} = config;
 
-  const {data, headers = {}, entity, hasToastr = true} = createOptions;
-  const url = getURL(createOptions);
-  const entityItem = pluralize.singular(entity);
+  return function (options) {
+    const createOptions = {
+      entityMethod: 'create',
+      ...options
+    };
 
-  return dispatch => {
-    const request = axios.post(url, data, {headers});
+    const {
+      data,
+      entity,
+      headers = {},
+      hasToastr = true
+    } = createOptions;
 
-    return wrapRequest({...createOptions, dispatch, request})
-      .then(({data: responseData}) => {
-        if (hasToastr) {
-          toastr.success('Added Successfully', `${capitalize(entityItem)} has been added`);
-        }
+    const url = getURL(createOptions);
+    const entityItem = pluralize.singular(entity);
 
-        return responseData;
-      });
+    return dispatch => {
+      const request = axios.post(url, data, {headers});
+
+      return wrapRequest({...createOptions, dispatch, request})
+        .then(({data: responseData}) => {
+          if (toastr && hasToastr) {
+            toastr.show({
+              type: 'success',
+              title: 'Added Successfully',
+              text: `${capitalize(entityItem)} has been added`
+            });
+          }
+
+          return responseData;
+        });
+    };
   };
 }
 
-export default create;
+export default createCreate;

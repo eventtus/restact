@@ -1,38 +1,42 @@
 import axios from 'axios';
-import {getURL, wrapRequest} from '../base';
 
-function get(options) {
-  const getOptions = {
-    entityMethod: options.collection ? 'all' : 'get',
-    ...options
-  };
+function createGet(base) {
+  const {getURL, wrapRequest} = base;
 
-  const {
-    params = {}, headers = {}
-  } = getOptions;
+  return function (options) {
+    const getOptions = {
+      entityMethod: options.collection ? 'all' : 'get',
+      ...options
+    };
 
-  const url = getURL(getOptions);
+    const {
+      params = {},
+      headers = {}
+    } = getOptions;
 
-  return dispatch => {
-    const request = axios.get(url, {headers, params})
-      .then(response => {
-        const {
-          'x-total-pages': totalPages,
-          'x-total': total,
-          'x-page': page
-        } = response.headers;
+    const url = getURL(getOptions);
 
-        const value = {
-          ...response,
-          total,
-          hasMore: Number(totalPages) > Number(page)
-        };
+    return dispatch => {
+      const request = axios.get(url, {headers, params})
+        .then(response => {
+          const {
+            'x-page': page,
+            'x-total': total,
+            'x-total-pages': totalPages
+          } = response.headers;
 
-        return value;
-      });
+          const hasMore = Number(totalPages) > Number(page);
 
-    return wrapRequest({...getOptions, dispatch, request});
+          return {
+            ...response,
+            total,
+            hasMore
+          };
+        });
+
+      return wrapRequest({...getOptions, dispatch, request});
+    };
   };
 }
 
-export default get;
+export default createGet;

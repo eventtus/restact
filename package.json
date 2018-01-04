@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
-    "pluralize": "^5.0.0",
+    "capitalize": "^1.0.0",
+    "object-path": "^0.11.4",
+    "pluralize": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^15.4.2",
@@ -30,19 +32,25 @@
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
-    "nwb": "0.20.x",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-redux": "^5.0.6",
-    "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0",
     "babel-eslint": "^7.2.3",
+    "bootstrap": "4.0.0-alpha.6",
     "eslint": "^4.2.0",
     "eslint-config-xo-react": "^0.13.0",
     "eslint-config-xo-space": "^0.16.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-babel": "^4.1.1",
-    "eslint-plugin-react": "7.1.0"
+    "eslint-plugin-react": "7.1.0",
+    "nwb": "0.20.x",
+    "random-int": "^1.0.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.6",
+    "react-redux-loading-bar": "^2.8.2",
+    "react-redux-toastr": "^7.1.5",
+    "react-transition-group": "1.2.0",
+    "reactstrap": "^4.8.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
   "author": "",
   "homepage": "",
@@ -54,6 +62,9 @@
   "eslintConfig": {
     "root": true,
     "parser": "babel-eslint",
+    "env": {
+      "browser": true
+    },
     "extends": [
       "xo-react/space",
       "xo-space/esnext"

@@ -1,49 +1,60 @@
-import R from 'ramda';
 import axios from 'axios';
-import {toastr} from 'react-redux-toastr';
-import entities from 'Constants/entities';
-import {showLoading, hideLoading} from 'react-redux-loading-bar';
+import objectPath from 'object-path';
+import config from '../../constants/config';
 
-const start = dispatch => dispatch(showLoading());
-const complete = dispatch => dispatch(hideLoading());
+function createBase({toastr, loading, entities, url: API_URL} = config) {
+  const loadingStart = dispatch => loading ? dispatch(loading.show()) : dispatch;
+  const loadingComplete = dispatch => loading ? dispatch(loading.hide()) : dispatch;
 
-function getURL({entity, entityMethod, entityParams = {}, entityUrl = API_URL}) {
-  return entityUrl + entities[entity][entityMethod](entityParams);
-}
-
-function wrapRequest(config) {
-  const {dispatch, request, ...requestConfig} = config;
-  const {actionType, params, noLoader, onSuccess} = requestConfig;
-
-  if (!noLoader) start(dispatch);
-
-  request
-    .then(onSuccess)
-    .then(R.partial(complete, [dispatch]))
-    .catch(thrown => {
-      const message = R.pathOr(thrown.message, ['response', 'headers', 'x-error'], thrown);
-
-      if (!noLoader) complete(dispatch);
-      if (!axios.isCancel(thrown)) {
-        toastr.error('Error', message, {
-          timeout: 5000,
-          attention: true
-        });
-      }
-    });
-
-  if (actionType) {
-    request.then(({data, headers, config}) => dispatch({
-      type: actionType,
-      data,
-      headers,
-      config,
-      params,
-      requestConfig
-    }));
+  function getURL({entity, entityMethod, entityParams = {}, entityUrl = API_URL}) {
+    return entityUrl + entities[entity][entityMethod](entityParams);
   }
 
-  return request;
+  function wrapRequest(config) {
+    const {dispatch, request, ...requestConfig} = config;
+    const {actionType, params, onSuccess, hasLoader = true} = requestConfig;
+
+    if (hasLoader) loadingStart(dispatch);
+
+    request
+      .then(onSuccess)
+      .then(() => loadingComplete(dispatch))
+      .catch(thrown => {
+        const message = objectPath.get(thrown, ['response', 'headers', 'x-error'], thrown.message);
+
+        if (hasLoader) loadingComplete(dispatch);
+
+        if (!axios.isCancel(thrown) && toastr) {
+          toastr.show({
+            type: 'error',
+            title: 'Error',
+            text: message,
+            options: {
+              timeout: 5000,
+              attention: true
+            }
+          });
+        }
+      });
+
+    if (actionType) {
+      request.then(({data, headers, config}) => dispatch({
+        type: actionType,
+        data,
+        headers,
+        config,
+        params,
+        requestConfig
+      }));
+    }
+
+    return request;
+  }
+
+  return {
+    getURL,
+    wrapRequest
+  };
 }
 
-export {getURL, wrapRequest};
+export default createBase;
