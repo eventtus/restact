@@ -5,7 +5,7 @@ import {toggleConfirmationModal} from '../confirmation';
 
 function createUpdate(base, config) {
   const {getURL, wrapRequest} = base;
-  const {showToastr} = config;
+  const {toastr} = config;
 
   return function (options) {
     const updateOptions = {
@@ -14,11 +14,14 @@ function createUpdate(base, config) {
     };
 
     const {
-      data, params = {}, headers = {}, entity, entityMethod,
-      hasConfirmation, hasToastr = true,
-      confirmationText = 'update this',
-      confirmationQuestion, confirmationHint, confirmationTitle, confirmationBtnTxt, confirmationColor,
-      customToasterMessage
+      data,
+      params = {},
+      headers = {},
+      entity,
+      entityMethod,
+      hasToastr = true,
+      confirmation = false,
+      toasterText
     } = updateOptions;
 
     const url = getURL(updateOptions);
@@ -34,20 +37,17 @@ function createUpdate(base, config) {
       });
 
       const isNotEntityUpdate = entityMethod !== 'update';
-      const modalText = confirmationText || `remove this ${entityItem}${isNotEntityUpdate ? ` ${entityMethod}` : ''}`;
-      const modalTitle = confirmationTitle || `Update`;
-      const modalHint = confirmationHint || '';
-      const toasterMessage = customToasterMessage ? customToasterMessage : `${capitalize(entityItem)} has been updated`;
+
       const confirm = () => {
         const request = axios.put(url, data, {headers, params});
 
         return wrapRequest({...updateOptions, dispatch, request})
           .then(() => {
-            if (hasToastr) {
-              showToastr({
+            if (toastr && hasToastr) {
+              toastr.show({
                 type: 'success',
                 title: 'Updated Successfully',
-                text: toasterMessage
+                text: toasterText || `${capitalize(entityItem)} has been updated`
               });
             }
           })
@@ -55,14 +55,14 @@ function createUpdate(base, config) {
           .catch($promiseReject);
       };
 
-      if (hasConfirmation) {
+      if (confirmation) {
         dispatch(toggleConfirmationModal({
-          title: modalTitle,
-          text: modalText,
-          hint: modalHint,
-          question: confirmationQuestion,
-          color: confirmationColor || 'success',
-          confirmText: confirmationBtnTxt || 'Yes, update',
+          title: confirmation.title || 'Update',
+          text: confirmation.text || `update this ${entityItem}${isNotEntityUpdate ? ` ${entityMethod}` : ''}`,
+          hint: confirmation.hint,
+          question: confirmation.question,
+          color: confirmation.color || 'success',
+          confirmText: confirmation.btnTxt || 'Yes, update',
           confirm
         }));
       } else {

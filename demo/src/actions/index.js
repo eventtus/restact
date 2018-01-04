@@ -38,7 +38,7 @@ function edit(id, {name}) {
   return api.update({
     entity,
     entityParams: {id},
-    hasConfirmation: true,
+    confirmation: true,
     actionType: UPDATE,
     data: {name},
     headers: {

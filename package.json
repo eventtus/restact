@@ -17,7 +17,8 @@
     "lint": "eslint src test",
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
-    "test:watch": "nwb test-react --server"
+    "test:watch": "nwb test-react --server",
+    "deploy": "gh-pages -d demo/dist"
   },
   "dependencies": {
     "axios": "^0.16.2",
@@ -40,6 +41,7 @@
     "eslint-loader": "^1.9.0",
     "eslint-plugin-babel": "^4.1.1",
     "eslint-plugin-react": "7.1.0",
+    "gh-pages": "^1.1.0",
     "nwb": "0.20.x",
     "random-int": "^1.0.0",
     "react": "^15.4.2",

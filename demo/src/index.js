@@ -53,7 +53,7 @@ class Demo extends Component {
     return (
       <div>
         <link
-          href="http://diegoddox.github.io/react-redux-toastr/7.1/react-redux-toastr.min.css"
+          href="//diegoddox.github.io/react-redux-toastr/7.1/react-redux-toastr.min.css"
           rel="stylesheet"
           type="text/css"
         />
