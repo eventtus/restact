@@ -1,7 +1,7 @@
 {
-  "name": "core-api.js",
+  "name": "react-redux-thunk-rest-api",
   "version": "1.0.0",
-  "description": "core-api.js React component",
+  "description": "react-redux-thunk-rest-api React component",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [

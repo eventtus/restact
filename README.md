@@ -1,10 +1,10 @@
-# core-api.js
+# react-redux-thunk-rest-api
 
 [![Travis][build-badge]][build]
 [![npm package][npm-badge]][npm]
 [![Coveralls][coveralls-badge]][coveralls]
 
-Describe core-api.js here.
+Describe react-redux-thunk-rest-api here.
 
 [build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
 [build]: https://travis-ci.org/user/repo
