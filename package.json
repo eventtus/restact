@@ -21,12 +21,12 @@
     "deploy": "gh-pages -d demo/dist"
   },
   "dependencies": {
-    "axios": "^0.16.2",
     "capitalize": "^1.0.0",
     "object-path": "^0.11.4",
     "pluralize": "^5.0.0"
   },
   "peerDependencies": {
+    "axios": "^0.16.2",
     "react": "^15.4.2",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
