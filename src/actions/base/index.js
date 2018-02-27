@@ -1,18 +1,43 @@
+// @flow
 import axios from 'axios';
 import objectPath from 'object-path';
-import config from '../../constants/config';
+import type {BaseConfigType, WrapConfigType, UrlOptionsType} from 'Types/config';
 
-function createBase({toastr, loading, entities, url: API_URL} = config) {
+const defaultBaseConfig: BaseConfigType = {
+  url: '',
+  entities: {},
+  includeToaster: false,
+  includeLoading: false
+};
+
+function createBase(baseConfig: BaseConfigType = defaultBaseConfig) {
+  const {
+    toaster,
+    loading,
+    entities,
+    url: API_URL
+  } = baseConfig;
+
   const loadingStart = dispatch => loading ? dispatch(loading.show()) : dispatch;
   const loadingComplete = dispatch => loading ? dispatch(loading.hide()) : dispatch;
 
-  function getURL({entity, entityMethod, entityParams = {}, entityUrl = API_URL}) {
+  function getURL(urlOptions: UrlOptionsType) {
+    const {entity, entityMethod, entityParams = {}, entityUrl = API_URL} = urlOptions;
+
     return entityUrl + entities[entity][entityMethod](entityParams);
   }
 
-  function wrapRequest(config) {
-    const {dispatch, request, ...requestConfig} = config;
-    const {actionType, params, onSuccess, hasLoader = true} = requestConfig;
+  function wrapRequest(wrapConfig: WrapConfigType) {
+    const {
+      actionType,
+      dispatch,
+      request,
+      hasLoader = true,
+      onSuccess,
+      ...requestConfig
+    } = wrapConfig;
+
+    const {params} = requestConfig;
 
     if (hasLoader) loadingStart(dispatch);
 
@@ -24,8 +49,8 @@ function createBase({toastr, loading, entities, url: API_URL} = config) {
 
         if (hasLoader) loadingComplete(dispatch);
 
-        if (!axios.isCancel(thrown) && toastr) {
-          toastr.show({
+        if (!axios.isCancel(thrown) && toaster) {
+          toaster.show({
             type: 'error',
             title: 'Error',
             text: message,

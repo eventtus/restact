@@ -1,0 +1,15 @@
+[ignore]
+.*/node_modules/nwb/.*
+
+[include]
+
+[libs]
+flow-typed
+
+[lints]
+
+[options]
+include_warnings=true
+module.name_mapper='^Types' ->'<PROJECT_ROOT>/src/@types'
+
+[strict]
