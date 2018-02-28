@@ -1,7 +1,7 @@
 {
-  "name": "react-redux-thunk-rest-api",
-  "version": "1.0.0",
-  "description": "react-redux-thunk-rest-api React component",
+  "name": "restact",
+  "version": "0.0.1",
+  "description": "restact adds more sugar to the Rest Apis when it comes to react redux thunk",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
