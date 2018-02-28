@@ -4,7 +4,7 @@ import capitalize from 'capitalize';
 
 function createCreate(base, config) {
   const {getURL, wrapRequest} = base;
-  const {toastr} = config;
+  const {toaster} = config;
 
   return function (options) {
     const createOptions = {
@@ -16,7 +16,7 @@ function createCreate(base, config) {
       data,
       entity,
       headers = {},
-      hasToastr = true
+      hastoaster = true
     } = createOptions;
 
     const url = getURL(createOptions);
@@ -27,8 +27,8 @@ function createCreate(base, config) {
 
       return wrapRequest({...createOptions, dispatch, request})
         .then(({data: responseData}) => {
-          if (toastr && hasToastr) {
-            toastr.show({
+          if (toaster && hastoaster) {
+            toaster.show({
               type: 'success',
               title: 'Added Successfully',
               text: `${capitalize(entityItem)} has been added`

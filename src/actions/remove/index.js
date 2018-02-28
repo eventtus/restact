@@ -5,7 +5,7 @@ import {toggleConfirmationModal} from '../confirmation';
 
 function createRemove(base, config) {
   const {getURL, wrapRequest} = base;
-  const {toastr} = config;
+  const {toaster} = config;
 
   return function (options) {
     const deleteOptions = {
@@ -18,7 +18,7 @@ function createRemove(base, config) {
       entity,
       entityMethod,
       isBulk = false,
-      hasToastr = true,
+      hastoaster = true,
       confirmation = {
         text: '',
         hint: '',
@@ -54,21 +54,21 @@ function createRemove(base, config) {
 
             if (isBulk && data && (data.deleted || data.failed)) {
               if (data.deleted.count) {
-                toastr.show({
+                toaster.show({
                   type: 'success',
                   title: `${data.deleted.count} Removed Successfully`
                 });
               }
 
               if (data.failed.count) {
-                toastr.show({
+                toaster.show({
                   type: 'error',
                   title: `${data.failed.count} Failed to remove`,
                   text: data.failed.message
                 });
               }
-            } else if (toastr && hasToastr) {
-              toastr.show({
+            } else if (toaster && hastoaster) {
+              toaster.show({
                 type: 'success',
                 title: 'Removed Successfully',
                 text: `${capitalize(entityItem)}${isNotEntityDelete ? ` ${entityMethod}` : ''} ${isBulk ? 'have' : 'has'} been removed`

@@ -5,7 +5,7 @@ import {toggleConfirmationModal} from '../confirmation';
 
 function createUpdate(base, config) {
   const {getURL, wrapRequest} = base;
-  const {toastr} = config;
+  const {toaster} = config;
 
   return function (options) {
     const updateOptions = {
@@ -19,7 +19,7 @@ function createUpdate(base, config) {
       headers = {},
       entity,
       entityMethod,
-      hasToastr = true,
+      hastoaster = true,
       confirmation = false,
       toasterText
     } = updateOptions;
@@ -43,8 +43,8 @@ function createUpdate(base, config) {
 
         return wrapRequest({...updateOptions, dispatch, request})
           .then(() => {
-            if (toastr && hasToastr) {
-              toastr.show({
+            if (toaster && hastoaster) {
+              toaster.show({
                 type: 'success',
                 title: 'Updated Successfully',
                 text: toasterText || `${capitalize(entityItem)} has been updated`

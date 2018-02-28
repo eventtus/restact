@@ -18,7 +18,8 @@
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server",
-    "deploy": "gh-pages -d demo/dist"
+    "deploy": "gh-pages -d demo/dist",
+    "flow": "flow"
   },
   "dependencies": {
     "capitalize": "^1.0.0",
@@ -33,14 +34,17 @@
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
+    "babel-eslint": "^8.1.1",
     "bootstrap": "4.0.0-alpha.6",
     "eslint": "^4.2.0",
     "eslint-config-xo-react": "^0.13.0",
     "eslint-config-xo-space": "^0.16.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-babel": "^4.1.1",
+    "eslint-plugin-flowtype": "^2.46.1",
+    "eslint-plugin-flowtype-errors": "^3.5.0",
     "eslint-plugin-react": "7.1.0",
+    "flow-bin": "^0.66.0",
     "gh-pages": "^1.1.0",
     "nwb": "0.20.x",
     "random-int": "^1.0.0",
@@ -59,7 +63,14 @@
   "license": "MIT",
   "repository": "",
   "keywords": [
-    "eventtus api"
+    "api",
+    "rest",
+    "restful",
+    "toolkit",
+    "thunk",
+    "axios",
+    "react",
+    "redux"
   ],
   "eslintConfig": {
     "root": true,
@@ -67,11 +78,18 @@
     "env": {
       "browser": true
     },
+    "plugins": [
+      "flowtype",
+      "flowtype-errors"
+    ],
     "extends": [
       "xo-react/space",
-      "xo-space/esnext"
+      "xo-space/esnext",
+      "plugin:flowtype/recommended"
     ],
     "rules": {
+      "flowtype-errors/show-errors": 2,
+      "flowtype-errors/show-warnings": 1,
       "react/forbid-component-props": 0,
       "react/jsx-closing-tag-location": 0,
       "react/jsx-closing-bracket-location": 0,
